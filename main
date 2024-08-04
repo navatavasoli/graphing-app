@@ -1,33 +1,43 @@
-function graphingapp
-    % window for viewing
-    fig = uifigure('Name', 'Desmos-like Graphing App');
-    
-    % Create a text area for input
-    txtInput = uitextarea(fig, 'Position', [20, 400, 300, 40], 'Value', 'sin(x)');
-    
-    % Create an axes for plotting
-    ax = uiaxes(fig, 'Position', [20, 50, 560, 300]);
-    
-    % Create a button for plotting
-    btnPlot = uibutton(fig, 'Position', [330, 400, 100, 40], 'Text', 'Plot', 'ButtonPushedFcn', @(btn,event) plotFunction(txtInput, ax));
-end
+function graphing_calculator
+    % create GUI figure
+    fig = uifigure('Position', [100, 100, 600, 400], 'Name', 'Graphing Calculator');
 
-function plotFunction(txtInput, ax)
-    % Get the function from the text area
-    funcStr = txtInput.Value;
-    
-    % Define the range of x
-    x = linspace(-10, 10, 1000);
-    
-    % Evaluate the function
-    try
-        f = eval(['@(x)', funcStr]);
-        y = f(x);
+    % create field for user input 
+    funcLabel = uilabel(fig, 'Position', [20, 350, 100, 30], 'Text', 'Function:');
+    funcEdit = uieditfield(fig, 'Position', [120, 350, 400, 30]);
+
+    % create 'entry' button
+    plotButton = uibutton(fig, 'Position', [530, 350, 50, 30], 'Text', 'Graph', ...
+                          'ButtonPushedFcn', @(btn, event) plotFunction());
+
+    % creation of axes 
+    ax = uiaxes(fig, 'Position', [50, 50, 500, 270]);
+
+    % set limits for x and y axes in the figure (not in GUI)
+    xlim([-100, 100]);
+    ylim([-1000, 1000]);
+
+    % plot the entered function
+    function plotFunction()
+        % convert the entered string into function form
+        funcStr = funcEdit.Value;
         
-        % Plot the function
-        plot(ax, x, y);
-        grid(ax, 'on');
-    catch
-        uialert(fig, 'Invalid function input.', 'Error');
+        % define 'x' variable
+        x = linspace(-10, 10, 1000);
+        
+        % function handle (to call the function indirectly)
+        try
+            func = str2func(['@(x) ' funcStr]);
+            % evaluate function
+            y = func(x);
+            % plot the function on the GUI
+            plot(ax, x, y);
+            title(ax, ['y = ' funcStr]);
+            xlabel(ax, 'x');
+            ylabel(ax, 'y');
+            grid(ax, 'on');
+        catch
+            uialert(fig, 'invalid', 'Error');
+        end
     end
 end
