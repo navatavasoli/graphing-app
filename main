@@ -1,0 +1,33 @@
+function graphingapp
+    % window for viewing
+    fig = uifigure('Name', 'Desmos-like Graphing App');
+    
+    % Create a text area for input
+    txtInput = uitextarea(fig, 'Position', [20, 400, 300, 40], 'Value', 'sin(x)');
+    
+    % Create an axes for plotting
+    ax = uiaxes(fig, 'Position', [20, 50, 560, 300]);
+    
+    % Create a button for plotting
+    btnPlot = uibutton(fig, 'Position', [330, 400, 100, 40], 'Text', 'Plot', 'ButtonPushedFcn', @(btn,event) plotFunction(txtInput, ax));
+end
+
+function plotFunction(txtInput, ax)
+    % Get the function from the text area
+    funcStr = txtInput.Value;
+    
+    % Define the range of x
+    x = linspace(-10, 10, 1000);
+    
+    % Evaluate the function
+    try
+        f = eval(['@(x)', funcStr]);
+        y = f(x);
+        
+        % Plot the function
+        plot(ax, x, y);
+        grid(ax, 'on');
+    catch
+        uialert(fig, 'Invalid function input.', 'Error');
+    end
+end
